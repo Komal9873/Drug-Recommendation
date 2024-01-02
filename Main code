@@ -1,0 +1,107 @@
+import streamlit as st
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load the dataset
+dataset = pd.read_csv('C:/Users/shara/Desktop/Drug Recommendation System Project/recommender dataset.csv')
+
+# Preprocessing
+dataset['text'] = dataset['medical_condition'] + ' ' + dataset['medical_condition_description'] + ' ' + dataset['generic_name'] + ' ' + dataset['side_effects']
+
+# Feature Extraction
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(dataset['text'])
+
+# Compute Cosine Similarity
+cosine_sim = cosine_similarity(tfidf_matrix)
+
+# Function to get top similar drugs for a given drug index
+def get_similar_drugs(drug_index, top_n=10):
+    drug_scores = list(enumerate(cosine_sim[drug_index]))
+    drug_scores = sorted(drug_scores, key=lambda x: x[1], reverse=True)
+    top_similar_drugs = drug_scores[1:top_n+1]
+    return top_similar_drugs
+
+# Streamlit app
+def main():
+    st.set_page_config(layout="wide", page_title="Drug Recommendation System", page_icon="💊")
+    st.title("Drug Recommendation System")
+    st.write("Enter a medical condition to get drug recommendations:")
+    
+    # Add dropdown for selecting medical conditions
+    medical_conditions = dataset['medical_condition'].unique()
+    selected_condition = st.selectbox("Medical Condition", medical_conditions)
+    
+    # Ask user about allergies
+    has_allergies = st.radio("Do you have any allergies?", ("Yes", "No"))
+    
+    if has_allergies == "Yes":
+        allergies_drug = st.text_input("Allergic Drugs (comma-separated)", "")
+        allergies_generic = st.text_input("Allergic Generic Names (comma-separated)", "")
+        allergies = {
+            'drugs': allergies_drug.split(',') if allergies_drug else [],
+            'generic_names': allergies_generic.split(',') if allergies_generic else []
+        }
+    else:
+        allergies = None
+    
+    if st.button("Recommend"):
+        recommend_drugs(selected_condition, allergies)
+
+def recommend_drugs(medical_condition, allergies):
+    condition_drugs = dataset[dataset['medical_condition'] == medical_condition]
+    
+    if condition_drugs.empty:
+        st.write("No drugs found for the given medical condition.")
+    else:
+        query_drug_index = condition_drugs.index[0]  # Index of the query drug in the subset
+        
+        similar_drugs = get_similar_drugs(query_drug_index)
+        
+        recommendations = []
+        for drug in similar_drugs:
+            drug_index, similarity_score = drug
+            drug_name = dataset['drug_name'][drug_index]
+            rx_otc = dataset['rx_otc'][drug_index]
+            generic_name = dataset['generic_name'][drug_index]
+            drug_allergies = dataset['side_effects'][drug_index]
+            
+            if allergies is not None:
+                common_allergies = set(allergies['drugs']).intersection(set(drug_allergies.split(',')))
+                common_generic_allergies = set(allergies['generic_names']).intersection(set(generic_name.split(',')))
+                if common_allergies or common_generic_allergies:
+                    continue  # Skip recommending the drug
+            
+            pharmeasy_link = "https://pharmeasy.in/search/all?name=" + generic_name.replace(' ', '%20')
+            recommendations.append({'generic_name': generic_name, 'drug_name': drug_name, 'rx_otc': rx_otc, 'purchase_link': pharmeasy_link})
+        
+        recommendations_df = pd.DataFrame(recommendations).transpose()
+        recommendations_df.rename(columns={'drug_name': 'Drug Name', 'generic_name': 'Generic Name', 'rx_otc': 'Rx/OTC', 'purchase_link': 'Purchase Link'}, inplace=True)
+        
+        st.markdown("---")
+        st.write("Recommended drugs for", medical_condition, ":")
+        
+        # Display table in vertical format
+        for column in recommendations_df.columns:
+            if column == 'Purchase Link':
+                st.write("*Purchase Medicine Here:*")
+            else:
+                if column == 'generic_name':
+                    column_label = "Generic Name"
+                elif column == 'drug_name':
+                    column_label = "Drug Name"
+                elif column == 'Rx/OTC':
+                    column_label = "Prescription Requirement"
+                else:
+                    column_label = column
+                st.write(f"*{column_label}:*")
+            for value in recommendations_df[column]:
+                st.write(value)
+        
+        # Display PharmEasy purchase link for each recommended drug
+        for i, row in recommendations_df.iterrows():
+            st.markdown(f"[Click here to purchase {row['Generic Name']}](row['Purchase Link'])")
+
+if _name_ == "_main_":
+    main()
