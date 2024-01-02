@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: rgb(64, 78, 93);
+  ;
+}
+
+.topnav a {
+  float: right;
+  color: #fffbfb;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #5c83d7;
+  color: rgb(215, 136, 136), 0.452);
+}
+
+.topnav a.active {
+  background-color: #5c83d7;
+  color: white;
+}
+body {
+      margin: 0;
+      padding: 0;
+      background: url("C:/Users/shara/Desktop/Drug Recommendation System Project/templates/image1.jpg")no-repeat center center fixed;
+      background-size:cover;
+      backdrop-filter: blur(4px);
+     
+    }
+    .square-button {
+      display: block;
+      width: 400px;
+      height: 100px;
+      background-color: #8d47d3;
+      color: #fff;
+      font-size: 20px;
+      border-radius: 10px;
+      text-align:right;
+      line-height: 80px;
+      margin: 0 auto;
+      margin-top: 100px;
+      text-decoration: none;
+      font-family:Georgia, 'Times New Roman', Times, serif;
+      font-weight: 600;
+    }
+
+.left {
+  background-color: rgba(127, 126, 126, 0.7);
+  padding: 20px;
+  float: left;
+  width: 34.75%; /* The width is 20%, by default */
+
+}
+
+.main {
+  padding: 20px;
+  float: right;
+  background-color: rgba(216, 215, 215, 0.7);
+  width: 60%; /* The width is 60%, by default */
+}
+
+.right {
+  background-color: rgba(159, 158, 158, 0.7);
+  padding: 20px;
+  float: left;
+  width: 20%; /* The width is 20%, by default */
+}
+
+/* Use a media query to add a break point at 800px: */
+@media screen and (max-width: 800px) {
+  .left, .main, .right {
+    width: 100%; /* The width is 100%, when the viewport is 800px or smaller */
+  }
+}
+</style>
+</head>
+<body>
+ 
+
+<div class="topnav">
+    <a href="C:\Users\shara\Desktop\Drug Recommendation System Project\templates\contactus.html">Contact</a>
+    <a href="C:\Users\shara\Desktop\Drug Recommendation System Project\templates\about.html">About</a>
+    <a class="active" href="#home">Home</a>
+  </div>
+  <div class="container">
+    <div class="disclaimer">
+      <marquee behavior="scroll" direction="left">
+      <p style="color: ivory;">WELCOME! HERE YOU GET QUICK DRUG RECOMMENDATIONS ON A SINGLE CLICK</p>
+      </marquee>
+    </div>
+  </div>
+  <div style="padding-left:16px">
+    <h1 style="font-size: 700%;text-align: center;font-family:Georgia;color: rgb(255, 255, 255);">FirstMed Care</h1>
+    <p style="font-size: 100%;text-align: center;font-family:Georgia;color: rgb(255, 255, 255);">"Get Quick and Easy drug recommendations along with Current market prices"</p>
+  </div>
+  <a href="http://localhost:8502/" class="square-button" style="text-align: center;">Get Your Drug Recommendation</a>
+</body>
+</html>
